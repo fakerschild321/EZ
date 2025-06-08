@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Register - PeriphTrade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="fas fa-desktop me-2"></i>PeriphTrade
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <i class="fas fa-th-large me-1"></i>Categories
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/products(category='monitors')}"><i class="fas fa-tv me-2"></i>Monitors</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='keyboards')}"><i class="fas fa-keyboard me-2"></i>Keyboards</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='mice')}"><i class="fas fa-computer-mouse me-2"></i>Mice</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='headphones')}"><i class="fas fa-headphones me-2"></i>Headphones</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='webcams')}"><i class="fas fa-video me-2"></i>Webcams</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='speakers')}"><i class="fas fa-volume-up me-2"></i>Speakers</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/auctions}"><i class="fas fa-gavel me-1"></i>Auctions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}"><i class="fas fa-shopping-bag me-1"></i>All Products</a></li>
+            </ul>
+
+            <!-- Search Form -->
+            <form class="d-flex me-3" th:action="@{/products}" method="get">
+                <input class="form-control" type="search" name="search" placeholder="Search products..."
+                       th:value="${param.search}" />
+                <button class="btn btn-outline-secondary ms-2" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <ul class="navbar-nav">
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart me-1"></i>Cart
+                        <span class="badge bg-secondary ms-1" th:text="${#lists.size(session.cart) ?: 0}"></span>
+                    </a>
+                </li>
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/seller/dashboard}">
+                        <i class="fas fa-store me-1"></i>Sell
+                    </a>
+                </li>
+                <li class="nav-item dropdown" th:if="${session.userId != null}">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i><span th:text="${session.userEmail}"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/seller/dashboard}">Dashboard</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/register}"><i class="fas fa-user-plus me-1"></i>Register</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3><i class="fas fa-user-plus me-2"></i>Create Account</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/register}" method="post" th:object="${user}" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName"
+                                       th:field="*{firstName}" required>
+                                <div class="invalid-feedback">
+                                    Please provide your first name.
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName"
+                                       th:field="*{lastName}" required>
+                                <div class="invalid-feedback">
+                                    Please provide your last name.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username"
+                                   th:field="*{username}" required>
+                            <div class="invalid-feedback">
+                                Please choose a username.
+                            </div>
+                            <small class="form-text text-muted">
+                                This will be your public display name.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email"
+                                   th:field="*{email}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email address.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password"
+                                       th:field="*{password}" required minlength="8" onkeyup="checkPassword()">
+                                <button class="btn btn-outline-secondary" type="button"
+                                        onclick="togglePassword('password')">
+                                    <i class="fas fa-eye" id="passwordToggle"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Password must be at least 8 characters long.
+                            </div>
+                            <div class="password-strength mt-2">
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar" id="passwordStrength" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small class="text-muted" id="passwordStrengthText">Password strength</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmPassword"
+                                       name="confirmPassword" required onkeyup="checkPasswordMatch()">
+                                <button class="btn btn-outline-secondary" type="button"
+                                        onclick="togglePassword('confirmPassword')">
+                                    <i class="fas fa-eye" id="confirmPasswordToggle"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback" id="passwordMismatch">
+                                Passwords do not match.
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="seller"
+                                   th:field="*{seller}">
+                            <label class="form-check-label" for="seller">
+                                I want to sell products on PeriphTrade
+                            </label>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms"
+                                   th:field="*{terms}" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the <a href="#" class="text-decoration-none">Terms of Service</a>
+                                and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree to the terms and conditions.
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="newsletter"
+                                   th:field="*{newsletter}">
+                            <label class="form-check-label" for="newsletter">
+                                Subscribe to our newsletter for deals and updates
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">
+                        Already have an account?
+                        <a th:href="@{/login}" class="text-decoration-none">Sign in here</a>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Benefits of Joining -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">
+                        <i class="fas fa-star me-2"></i>Why Join PeriphTrade?
+                    </h5>
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+                            <h6>Secure Trading</h6>
+                            <small class="text-muted">Protected transactions</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-gavel fa-2x text-primary mb-2"></i>
+                            <h6>Exciting Auctions</h6>
+                            <small class="text-muted">Bid and save more</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                            <h6>Community</h6>
+                            <small class="text-muted">Join trusted sellers</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="bg-light border-top mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-desktop me-2"></i>PeriphTrade</h5>
+                <p class="text-muted">Your trusted marketplace for second-hand computer peripherals.</p>
+            </div>
+            <div class="col-md-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products}" class="text-decoration-none">All Products</a></li>
+                    <li><a th:href="@{/auctions}" class="text-decoration-none">Auctions</a></li>
+                    <li><a th:href="@{/seller/dashboard}" class="text-decoration-none">Become a Seller</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Categories</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products(category='monitors')}" class="text-decoration-none">Monitors</a></li>
+                    <li><a th:href="@{/products(category='keyboards')}" class="text-decoration-none">Keyboards</a></li>
+                    <li><a th:href="@{/products(category='mice')}" class="text-decoration-none">Mice</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4" />
+        <div class="text-center text-muted">
+            <p>&copy; 2024 PeriphTrade. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    // Form validation
+    (function() {
+        'use strict';
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    })();
+
+    function togglePassword(fieldId) {
+        const passwordInput = document.getElementById(fieldId);
+        const toggleIcon = document.getElementById(fieldId + 'Toggle');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+
+    function checkPassword() {
+        const password = document.getElementById('password').value;
+        const strengthBar = document.getElementById('passwordStrength');
+        const strengthText = document.getElementById('passwordStrengthText');
+
+        let strength = 0;
+        let strengthLabel = '';
+
+        if (password.length >= 8) strength += 25;
+        if (password.match(/[a-z]/)) strength += 25;
+        if (password.match(/[A-Z]/)) strength += 25;
+        if (password.match(/[0-9]/)) strength += 25;
+
+        strengthBar.style.width = strength + '%';
+
+        if (strength < 50) {
+            strengthBar.className = 'progress-bar bg-danger';
+            strengthLabel = 'Weak';
+        } else if (strength < 75) {
+            strengthBar.className = 'progress-bar bg-warning';
+            strengthLabel = 'Fair';
+        } else if (strength < 100) {
+            strengthBar.className = 'progress-bar bg-info';
+            strengthLabel = 'Good';
+        } else {
+            strengthBar.className = 'progress-bar bg-success';
+            strengthLabel = 'Strong';
+        }
+
+        strengthText.textContent = strengthLabel;
+
+        checkPasswordMatch();
+    }
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const mismatchDiv = document.getElementById('passwordMismatch');
+
+        if (confirmPassword === '') return;
+
+        if (password !== confirmPassword) {
+            document.getElementById('confirmPassword').classList.add('is-invalid');
+            mismatchDiv.style.display = 'block';
+        } else {
+            document.getElementById('confirmPassword').classList.remove('is-invalid');
+            document.getElementById('confirmPassword').classList.add('is-valid');
+            mismatchDiv.style.display = 'none';
+        }
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

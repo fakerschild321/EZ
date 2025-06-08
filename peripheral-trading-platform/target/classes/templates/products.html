@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>
+        <th:block th:if="${currentCategory != null}">
+        <span th:text="${#strings.capitalize(currentCategory)}"></span> -
+        </th:block>
+        Products - PeriphTrade
+    </title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        /* 额外样式让list-view卡片更扁平 */
+        .list-view {
+            flex-direction: row !important;
+            height: 150px;
+        }
+        .list-view .card-img-top {
+            width: 150px;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+        }
+        .list-view .card-body {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="fas fa-desktop me-2"></i>PeriphTrade
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <i class="fas fa-th-large me-1"></i>Categories
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/products(category='monitors')}"><i class="fas fa-tv me-2"></i>Monitors</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='keyboards')}"><i class="fas fa-keyboard me-2"></i>Keyboards</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='mice')}"><i class="fas fa-computer-mouse me-2"></i>Mice</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='headphones')}"><i class="fas fa-headphones me-2"></i>Headphones</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='webcams')}"><i class="fas fa-video me-2"></i>Webcams</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='speakers')}"><i class="fas fa-volume-up me-2"></i>Speakers</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/auctions}"><i class="fas fa-gavel me-1"></i>Auctions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}"><i class="fas fa-shopping-bag me-1"></i>All Products</a></li>
+            </ul>
+
+            <!-- Search Form -->
+            <form class="d-flex me-3" th:action="@{/products}" method="get">
+                <input class="form-control" type="search" name="search" placeholder="Search products..."
+                       th:value="${param.search}" />
+                <button class="btn btn-outline-secondary ms-2" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <ul class="navbar-nav">
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart me-1"></i>Cart
+                        <span class="badge bg-secondary ms-1" th:text="${#lists.size(session.cart) ?: 0}"></span>
+                    </a>
+                </li>
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/seller/dashboard}">
+                        <i class="fas fa-store me-1"></i>Sell
+                    </a>
+                </li>
+                <li class="nav-item dropdown" th:if="${session.userId != null}">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i><span th:text="${session.userEmail}"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/seller/dashboard}">Dashboard</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/register}"><i class="fas fa-user-plus me-1"></i>Register</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container my-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>
+                <th:block th:if="${currentCategory != null}">
+                    <span th:text="${#strings.capitalize(currentCategory)}"></span>
+                </th:block>
+                <th:block th:unless="${currentCategory != null}">
+                    All Products
+                </th:block>
+
+                <th:block th:if="${search != null}">
+                    <small class="text-muted">- Search results for "<span th:text="${search}"></span>"</small>
+                </th:block>
+            </h1>
+            <p class="text-muted" th:text="${products.size()} + ' product(s) found'"></p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary" onclick="toggleView('grid')">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="toggleView('list')">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" th:action="@{/products}">
+                        <input type="hidden" name="category" th:value="${currentCategory}" />
+                        <th:block th:if="${search != null}">
+                            <input type="hidden" name="search" th:value="${search}" />
+                        </th:block>
+                        <!-- Price Range -->
+                        <div class="mb-4">
+                            <h6>Price Range</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" class="form-control" name="min_price" placeholder="Min"
+                                           th:value="${param.min_price}" />
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control" name="max_price" placeholder="Max"
+                                           th:value="${param.max_price}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        <th:block th:if="${currentCategory == null}">
+                            <div class="mb-4">
+                                <h6>Categories</h6>
+                                <th:block th:each="category, iterStat : ${categories}">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="categories"
+                                               th:id="'cat' + ${iterStat.index}" th:value="${category.toLowerCase()}"
+                                               th:checked="${#lists.contains(param.categories, category.toLowerCase())}" />
+                                        <label class="form-check-label" th:for="'cat' + ${iterStat.index}" th:text="${category}"></label>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </th:block>
+
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Categories -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-th-large me-2"></i>Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a th:href="@{/products}" class="list-group-item list-group-item-action"
+                       th:classappend="${currentCategory == null} ? 'active'">
+                        All Products
+                    </a>
+                    <th:block th:each="category : ${categories}">
+                        <a th:href="@{/products(category=${category.toLowerCase()})}"
+                           class="list-group-item list-group-item-action"
+                           th:classappend="${currentCategory != null and currentCategory.toLowerCase() == category.toLowerCase()} ? 'active'">
+                            <i class="fas me-2"
+                               th:classappend="'fa-' +
+                               (${category} == 'Monitors' ? 'tv' :
+                               (${category} == 'Keyboards' ? 'keyboard' :
+                               (${category} == 'Mice' ? 'computer-mouse' :
+                               (${category} == 'Headphones' ? 'headphones' :
+                               (${category} == 'Webcams' ? 'video' :
+                               (${category} == 'Speakers' ? 'volume-up' : 'circle'))))))">
+                            </i>
+                            <span th:text="${category}"></span>
+                        </a>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <th:block th:if="${products != null and !products.isEmpty()}">
+                <div id="products-container" class="row g-4">
+                    <th:block th:each="product : ${products}">
+                        <div class="col-xl-4 col-lg-6 col-md-6 product-item">
+                            <div class="card h-100 d-flex flex-column">
+                                <div class="position-relative">
+                                    <img th:src="${product.imageUrl}"
+                                         class="card-img-top" th:alt="${product.title}"
+                                         style="height: 200px; object-fit: cover;"
+                                         onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=200&fit=crop'">
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2"
+                                          th:text="${product.condition}"></span>
+                                    <th:block th:if="${product.featured}">
+                                        <span class="badge bg-warning position-absolute top-0 start-0 m-2">Featured</span>
+                                    </th:block>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title" th:text="${product.title}"></h5>
+                                    <p class="card-text text-muted small"
+                                       th:text="${#strings.substring(product.description, 0, 100) + '...'}"></p>
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="h5 mb-0 text-success" th:text="'$' + ${#numbers.formatDecimal(product.price, 2, 'POINT')}"></span>
+                                            <span class="badge bg-secondary" th:text="${product.category}"></span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn btn-primary">
+                                                <i class="fas fa-eye me-1"></i>View Details
+                                            </a>
+                                            <a th:href="@{/cart/add/{id}(id=${product.id})}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </th:block>
+            <th:block th:unless="${products != null and !products.isEmpty()}">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h3>No products found</h3>
+                    <p class="text-muted">Try adjusting your search criteria or browse all categories.</p>
+                    <a th:href="@{/products}" class="btn btn-primary">View All Products</a>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="bg-light border-top mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-desktop me-2"></i>PeriphTrade</h5>
+                <p class="text-muted">Your trusted marketplace for second-hand computer peripherals.</p>
+            </div>
+            <div class="col-md-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products}" class="text-decoration-none">All Products</a></li>
+                    <li><a th:href="@{/auctions}" class="text-decoration-none">Auctions</a></li>
+                    <li><a th:href="@{/seller/dashboard}" class="text-decoration-none">Become a Seller</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Categories</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products(category='monitors')}" class="text-decoration-none">Monitors</a></li>
+                    <li><a th:href="@{/products(category='keyboards')}" class="text-decoration-none">Keyboards</a></li>
+                    <li><a th:href="@{/products(category='mice')}" class="text-decoration-none">Mice</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4" />
+        <div class="text-center text-muted">
+            <p>&copy; 2024 PeriphTrade. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FontAwesome JS (optional if icons need dynamic support) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<script>
+    function toggleView(viewType) {
+        const container = document.getElementById('products-container');
+        if (!container) return;
+        const items = container.querySelectorAll('.product-item');
+
+        if (viewType === 'list') {
+            container.className = 'row g-3';
+            items.forEach(item => {
+                item.className = 'col-12 product-item';
+                const card = item.querySelector('.card');
+                card.classList.add('list-view');
+            });
+        } else {
+            container.className = 'row g-4';
+            items.forEach(item => {
+                item.className = 'col-xl-4 col-lg-6 col-md-6 product-item';
+                const card = item.querySelector('.card');
+                card.classList.remove('list-view');
+            });
+        }
+    }
+</script>
+</body>
+</html>

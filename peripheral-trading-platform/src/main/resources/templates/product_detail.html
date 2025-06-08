@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${product.title} + ' - PeriphTrade'">Product - PeriphTrade</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- FontAwesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        .thumbnail {
+            cursor: pointer;
+            border: 1px solid #ddd;
+            padding: 2px;
+            transition: border-color 0.3s ease;
+        }
+        .thumbnail:hover {
+            border-color: #007bff;
+        }
+        .thumbnail.border-primary {
+            border-color: #0d6efd !important;
+        }
+        .product-image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="fas fa-desktop me-2"></i>PeriphTrade
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown">
+                        <i class="fas fa-th-large me-1"></i>Categories
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/products(category='monitors')}"><i class="fas fa-tv me-2"></i>Monitors</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='keyboards')}"><i class="fas fa-keyboard me-2"></i>Keyboards</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='mice')}"><i class="fas fa-computer-mouse me-2"></i>Mice</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='headphones')}"><i class="fas fa-headphones me-2"></i>Headphones</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='webcams')}"><i class="fas fa-video me-2"></i>Webcams</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products(category='speakers')}"><i class="fas fa-volume-up me-2"></i>Speakers</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/auctions}"><i class="fas fa-gavel me-1"></i>Auctions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/products}"><i class="fas fa-shopping-bag me-1"></i>All Products</a></li>
+            </ul>
+
+            <!-- Search Form -->
+            <form class="d-flex me-3" th:action="@{/products}" method="get">
+                <input class="form-control" type="search" name="search" placeholder="Search products..."
+                       th:value="${param.search}" />
+                <button class="btn btn-outline-secondary ms-2" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <ul class="navbar-nav">
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/cart}">
+                        <i class="fas fa-shopping-cart me-1"></i>Cart
+                        <span class="badge bg-secondary ms-1" th:text="${#lists.size(session.cart) ?: 0}"></span>
+                    </a>
+                </li>
+                <li th:if="${session.userId != null}">
+                    <a class="nav-link" th:href="@{/seller/dashboard}">
+                        <i class="fas fa-store me-1"></i>Sell
+                    </a>
+                </li>
+                <li class="nav-item dropdown" th:if="${session.userId != null}">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i><span th:text="${session.userEmail}"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{/seller/dashboard}">Dashboard</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/login}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                </li>
+                <li th:if="${session.userId == null}">
+                    <a class="nav-link" th:href="@{/register}"><i class="fas fa-user-plus me-1"></i>Register</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/products}">Products</a></li>
+            <li class="breadcrumb-item">
+                <a th:href="@{/products(category=${product.category.toLowerCase()})}"
+                   th:text="${product.category}">Category</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${product.title}">Product</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-6 mb-4">
+            <div class="product-image-container">
+                <img th:src="${product.imageUrl}"
+                     class="img-fluid rounded" th:alt="${product.title}" id="mainImage"
+                     onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=400&fit=crop'"/>
+            </div>
+
+            <!-- Image Gallery Thumbnails -->
+            <div class="row g-2 mt-3">
+                <div class="col-3" th:each="i : ${#numbers.sequence(1,4)}">
+                    <img th:src="${product.imageUrl}"
+                         class="img-fluid rounded thumbnail"
+                         th:alt="'Thumbnail ' + i"
+                         onclick="changeMainImage(this.src)"
+                         onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=150&h=100&fit=crop'"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="col-lg-6">
+            <h1 class="h2 mb-3" th:text="${product.title}">Product Title</h1>
+
+            <!-- Price and Condition -->
+            <div class="d-flex align-items-center mb-3">
+                <span class="h3 text-success me-3"
+                      th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">${product.price}</span>
+                <span class="badge bg-success fs-6" th:text="${product.condition}">Condition</span>
+                <span class="badge bg-warning ms-2" th:if="${product.featured}">Featured</span>
+            </div>
+
+            <!-- Category -->
+            <p class="mb-3">
+                <strong>Category:</strong>
+                <a th:href="@{/products(category=${product.category.toLowerCase()})}" class="text-decoration-none" th:text="${product.category}">Category</a>
+            </p>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p class="text-muted" th:text="${product.description}">Product description here.</p>
+            </div>
+
+            <!-- Specifications (Mock data) -->
+            <div class="mb-4">
+                <h5>Specifications</h5>
+                <ul class="list-unstyled">
+                    <li th:if="${product.category.toLowerCase() == 'monitors'}"><strong>Screen Size:</strong> 24 inches</li>
+                    <li th:if="${product.category.toLowerCase() == 'monitors'}"><strong>Resolution:</strong> 1920x1080</li>
+                    <li th:if="${product.category.toLowerCase() == 'monitors'}"><strong>Refresh Rate:</strong> 60Hz</li>
+                    <li th:if="${product.category.toLowerCase() == 'monitors'}"><strong>Connectivity:</strong> HDMI, VGA</li>
+
+                    <li th:if="${product.category.toLowerCase() == 'keyboards'}"><strong>Switch Type:</strong> Mechanical</li>
+                    <li th:if="${product.category.toLowerCase() == 'keyboards'}"><strong>Layout:</strong> Full Size</li>
+                    <li th:if="${product.category.toLowerCase() == 'keyboards'}"><strong>Backlight:</strong> RGB</li>
+                    <li th:if="${product.category.toLowerCase() == 'keyboards'}"><strong>Connectivity:</strong> USB</li>
+
+                    <li th:if="${product.category.toLowerCase() == 'mice'}"><strong>DPI:</strong> Up to 3200</li>
+                    <li th:if="${product.category.toLowerCase() == 'mice'}"><strong>Buttons:</strong> 6</li>
+                    <li th:if="${product.category.toLowerCase() == 'mice'}"><strong>Connectivity:</strong> Wireless</li>
+                    <li th:if="${product.category.toLowerCase() == 'mice'}"><strong>Battery Life:</strong> 30+ hours</li>
+
+                    <li th:if="${!(product.category.toLowerCase() == 'monitors' or product.category.toLowerCase() == 'keyboards' or product.category.toLowerCase() == 'mice')}">
+                        <strong>Condition:</strong> <span th:text="${product.condition}">Condition</span>
+                    </li>
+                    <li th:if="${!(product.category.toLowerCase() == 'monitors' or product.category.toLowerCase() == 'keyboards' or product.category.toLowerCase() == 'mice')}">
+                        <strong>Brand:</strong> Quality Brand
+                    </li>
+                    <li th:if="${!(product.category.toLowerCase() == 'monitors' or product.category.toLowerCase() == 'keyboards' or product.category.toLowerCase() == 'mice')}">
+                        <strong>Warranty:</strong> 30 days
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-md-block mb-4">
+                <a th:href="@{/cart/add/{productId}(productId=${product.id})}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                </a>
+                <button class="btn btn-outline-secondary btn-lg" th:onclick="'addToWishlist(' + ${product.id} + ')'">
+                    <i class="fas fa-heart me-2"></i>Add to Wishlist
+                </button>
+            </div>
+
+            <!-- Seller Information -->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-store me-2"></i>Seller Information</h6>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <p class="mb-1"><strong>Verified Seller</strong></p>
+                            <p class="text-muted small mb-0">
+                                <i class="fas fa-star text-warning me-1"></i>4.8/5 Rating (124 reviews)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Tabs -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">
+                        <i class="fas fa-info-circle me-2"></i>Description
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                        <i class="fas fa-star me-2"></i>Reviews
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button" role="tab" aria-controls="shipping" aria-selected="false">
+                        <i class="fas fa-shipping-fast me-2"></i>Shipping
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="productTabsContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <div class="p-4">
+                        <h5>Detailed Description</h5>
+                        <p th:text="${product.description}">Detailed description here.</p>
+                        <p>This item is in <span th:text="${product.condition.toLowerCase()}">condition</span> condition and has been thoroughly tested to ensure it meets our quality standards. All items come with a 30-day return guarantee.</p>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                    <div class="p-4">
+                        <h5>Customer Reviews</h5>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <span class="fw-bold">John D.</span>
+                                <span class="text-muted ms-2">2 days ago</span>
+                            </div>
+                            <p>"Great product, exactly as described. Fast shipping!"</p>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-3">
+                                    <div class="text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                </div>
+                                <span class="fw-bold">Sarah M.</span>
+                                <span class="text-muted ms-2">1 week ago</span>
+                            </div>
+                            <p>"Good value for money. Minor wear but works perfectly."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="shipping" role="tabpanel" aria-labelledby="shipping-tab">
+                    <div class="p-4">
+                        <h5>Shipping Information</h5>
+                        <ul>
+                            <li><strong>Standard Shipping:</strong> 3-5 business days - $5.99</li>
+                            <li><strong>Express Shipping:</strong> 1-2 business days - $12.99</li>
+                            <li><strong>Free Shipping:</strong> Orders over $50</li>
+                        </ul>
+                        <p class="text-muted">All items are carefully packaged to ensure safe delivery. Tracking information will be provided once your order ships.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Related Products</h3>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" th:each="i : ${#numbers.sequence(1,3)}">
+                    <div class="card">
+                        <img th:src="'https://via.placeholder.com/300x200?text=Related+Product+' + i"
+                             class="card-img-top" alt="Related Product" style="height: 200px; object-fit: cover;"/>
+                        <div class="card-body">
+                            <h6 class="card-title" th:text="'Product ' + i">Product Name</h6>
+                            <p class="text-success fw-bold" th:text="'$' + (20 + i * 10)">Price</p>
+                            <a href="#" class="btn btn-outline-primary btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer class="bg-light border-top mt-5 py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5><i class="fas fa-desktop me-2"></i>PeriphTrade</h5>
+                <p class="text-muted">Your trusted marketplace for second-hand computer peripherals.</p>
+            </div>
+            <div class="col-md-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products}" class="text-decoration-none">All Products</a></li>
+                    <li><a th:href="@{/auctions}" class="text-decoration-none">Auctions</a></li>
+                    <li><a th:href="@{/seller/dashboard}" class="text-decoration-none">Become a Seller</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Categories</h6>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/products(category='monitors')}" class="text-decoration-none">Monitors</a></li>
+                    <li><a th:href="@{/products(category='keyboards')}" class="text-decoration-none">Keyboards</a></li>
+                    <li><a th:href="@{/products(category='mice')}" class="text-decoration-none">Mice</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4" />
+        <div class="text-center text-muted">
+            <p>&copy; 2024 PeriphTrade. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function changeMainImage(src) {
+        document.getElementById('mainImage').src = src;
+    }
+
+    function addToWishlist(productId) {
+        alert('Added product ' + productId + ' to wishlist!');
+        // 这里可以调用后端接口实现真正的加入愿望清单逻辑
+    }
+</script>
+</body>
+</html>

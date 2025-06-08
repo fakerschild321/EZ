@@ -1,0 +1,490 @@
+/* Custom styles for PeriphTrade - Modern Blue Theme */
+
+:root {
+    --primary-blue: #2563eb;
+    --primary-blue-dark: #1d4ed8;
+    --primary-blue-light: #3b82f6;
+    --secondary-blue: #60a5fa;
+    --accent-blue: #dbeafe;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+    --bs-danger: #dc3545;
+    --bs-gray-200: #e5e7eb; /* Bootstrap 5 默认的灰色200 */
+    --bs-gray-400: #9ca3af; /* Bootstrap 5 默认的灰色400 */
+    --bs-gray-500: #6b7280; /* Bootstrap 5 默认的灰色500 */
+    --bs-primary: #0d6efd;       /* Bootstrap 5 默认蓝色 */
+    --bs-gray-100: #f8f9fa;      /* Bootstrap 5 默认灰色100 */
+    --bs-success: #198754;        /* Bootstrap 5 默认成功色绿色 */
+    --bs-gray-600: #6c757d;      /* Bootstrap 5 默认灰色600 */
+}
+
+/* Override Bootstrap primary colors */
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-dark);
+    border-color: var(--primary-blue-dark);
+}
+
+.bg-primary {
+    background-color: var(--primary-blue) !important;
+}
+
+.text-primary {
+    color: var(--primary-blue) !important;
+}
+
+.border-primary {
+    border-color: var(--primary-blue) !important;
+}
+
+/* Hero section styling */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    min-height: 450px;
+    border-radius: 0 0 2rem 2rem;
+}
+
+.hero-main-image {
+    max-width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+.hero-image:hover .hero-main-image {
+    transform: scale(1.02);
+}
+
+.hero-badge {
+    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.hero-stats {
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Modern card styling */
+.card {
+    transition: all 0.3s ease;
+    border: 1px solid var(--gray-200);
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+    border-color: var(--secondary-blue);
+}
+
+/* Modern category cards */
+.card.bg-secondary {
+    background: var(--gray-50) !important;
+    border: 1px solid var(--gray-200);
+}
+
+.card.bg-secondary:hover {
+    background: var(--accent-blue) !important;
+    color: var(--primary-blue);
+}
+
+.category-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+}
+
+.category-icon {
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover .category-icon {
+    transform: scale(1.1);
+}
+
+/* Product card enhancements */
+.product-card {
+    overflow: hidden;
+}
+
+.product-card .product-overlay {
+    background: rgba(37, 99, 235, 0.9);
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.product-card img {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Feature cards styling */
+.feature-card {
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    border: 1px solid var(--gray-200);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.1);
+    border-color: var(--secondary-blue);
+}
+
+.feature-icon .icon-circle {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .icon-circle {
+    background: var(--primary-blue) !important;
+    transform: scale(1.1);
+}
+
+.feature-card:hover .icon-circle i {
+    color: white !important;
+}
+
+/* Modern spacing utilities */
+.min-vh-50 {
+    min-height: 50vh;
+}
+
+/* Enhanced navbar styling */
+.navbar-brand {
+    font-size: 1.5rem;
+    color: var(--primary-blue) !important;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    color: var(--gray-700) !important;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-blue) !important;
+}
+
+/* Auction specific styles */
+.auction-live-badge {
+    animation: pulse-glow 2s infinite;
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(220, 53, 69, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+    }
+}
+
+/* Auction timer styling with blue theme */
+.auction-timer {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+}
+
+.auction-timer.bg-primary {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)) !important;
+}
+
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Auction timer styling */
+.auction-timer {
+    font-family: 'Courier New', monospace;
+}
+
+.timer-unit {
+    padding: 0.5rem;
+}
+
+.timer-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.timer-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.auction-timer-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+}
+
+/* Auction card styling */
+.auction-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.auction-card:hover {
+    border-color: var(--bs-danger);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.15);
+}
+
+/* Product list view styling */
+.card.list-view {
+    flex-direction: row;
+}
+
+.card.list-view .card-img-top {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card.list-view .card-body {
+    flex: 1;
+}
+
+/* Thumbnail styling */
+.thumbnail {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+    border-color: var(--bs-primary);
+    opacity: 0.8;
+}
+
+/* Shopping cart item styling */
+.cart-item {
+    transition: background-color 0.2s ease;
+}
+
+.cart-item:hover {
+    background-color: var(--bs-gray-100);
+}
+
+/* Form validation styling */
+.was-validated .form-control:valid {
+    border-color: var(--bs-success);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.94-.94-.94-.94L1.36 5.8l.94.93zm2.4-1.88L6.64 2.93 5.7 1.99 4.76 2.93l-.94-.94L2.88 2.93 3.82 3.87l.94-.94z'/%3e%3c/svg%3e");
+}
+
+.was-validated .form-control:invalid {
+    border-color: var(--bs-danger);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.5.4-.5m-.4 2.5v.5'/%3e%3c/svg%3e");
+}
+
+/* Password strength indicator */
+.password-strength .progress {
+    height: 4px;
+    border-radius: 2px;
+}
+
+/* Seller dashboard specific styles */
+.nav-tabs .nav-link {
+    color: var(--bs-gray-600);
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    border-bottom-color: var(--bs-primary);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bs-primary);
+    border-bottom-color: var(--bs-primary);
+    background-color: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 300px;
+        text-align: center;
+    }
+    
+    .hero-section .display-4 {
+        font-size: 2rem;
+    }
+    
+    .timer-value {
+        font-size: 1.2rem;
+    }
+    
+    .timer-label {
+        font-size: 0.7rem;
+    }
+    
+    .card.list-view {
+        flex-direction: column;
+    }
+    
+    .card.list-view .card-img-top {
+        width: 100%;
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .timer-unit {
+        padding: 0.25rem;
+    }
+    
+    .timer-value {
+        font-size: 1rem;
+    }
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Badge animations */
+.badge {
+    transition: all 0.2s ease;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+/* Modern button styling */
+.btn {
+    transition: all 0.3s ease;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border: none;
+}
+
+.btn-outline-primary {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-outline-secondary {
+    color: var(--gray-600);
+    border-color: var(--gray-300);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--gray-100);
+    border-color: var(--gray-300);
+    color: var(--gray-700);
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-gray-200);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-gray-400);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-gray-500);
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .btn,
+    .modal,
+    footer {
+        display: none !important;
+    }
+    
+    .container {
+        max-width: none !important;
+    }
+}
